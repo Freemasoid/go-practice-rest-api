@@ -3,11 +3,13 @@ package main
 import (
 	"net/http"
 
+	"github.com/Freemasoid/go-practice-rest-api/db"
 	"github.com/Freemasoid/go-practice-rest-api/models"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	db.InitDB()
 	server := gin.Default()
 
 	server.GET("/events", getEvents)
