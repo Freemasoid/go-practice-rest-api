@@ -8,7 +8,7 @@ import (
 )
 
 func Signup(context *gin.Context) {
-	var user models.Event
+	var user models.User
 
 	err := context.ShouldBindJSON(&user)
 
