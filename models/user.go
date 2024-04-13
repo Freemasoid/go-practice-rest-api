@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/Freemasoid/go-practice-rest-api/db"
 	"github.com/Freemasoid/go-practice-rest-api/utils"
 )
@@ -37,4 +39,23 @@ func (u User) Save() error {
 
 	u.ID = userId
 	return err
+}
+
+func (u User) ValidateCredentials() error {
+	query := "SELECT password FROM users WHERE email = ?"
+	row := db.DB.QueryRow(query, u.Email)
+
+	var retrievedPassword string
+	err := row.Scan(&retrievedPassword)
+	if err != nil {
+		return errors.New("credentials invalid")
+	}
+
+	passwordValid := utils.CheckPasswordHash(u.Password, retrievedPassword)
+
+	if !passwordValid {
+		return errors.New("credentials invalid")
+	}
+
+	return nil
 }
