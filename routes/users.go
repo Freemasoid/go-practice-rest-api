@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Freemasoid/go-practice-rest-api/models"
+	"github.com/Freemasoid/go-practice-rest-api/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,9 +41,16 @@ func Login(context *gin.Context) {
 	err = user.ValidateCredentials()
 
 	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "could not authenticate user"})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "login successful"})
+	token, err := utils.GenerateToken(user.Email, user.ID)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "could not authenticate user"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "login successful", "token": token})
 }
