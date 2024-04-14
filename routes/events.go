@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/Freemasoid/go-practice-rest-api/models"
-	"github.com/Freemasoid/go-practice-rest-api/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,27 +37,15 @@ func GetEvent(context *gin.Context) {
 }
 
 func CreateEvent(context *gin.Context) {
-	token := context.Request.Header.Get("Authorization")
-
-	if token == "" {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "not authorized"})
-		return
-	}
-
-	userId, err := utils.VerifyToken(token)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{"message": "not authorized"})
-		return
-	}
-
 	var event models.Event
-	err = context.ShouldBindJSON(&event)
+	err := context.ShouldBindJSON(&event)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse request data"})
 		return
 	}
+
+	userId := context.GetInt64("userId")
 
 	event.UserID = userId
 
